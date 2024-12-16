@@ -65,8 +65,18 @@
 </div>
 
 <div class="input-group">
-  <label for="mileage">Federal Mileage Cost per Mile (M):</label>
-  <input type="number" id="mileage" step="0.01" placeholder="e.g. 0.65"/>
+  <label for="mpg">Miles per Gallon (MPG):</label>
+  <input type="number" id="mpg" step="1" placeholder="e.g. 25"/>
+</div>
+
+<div class="input-group">
+  <label for="gasCost">Gas Cost per Gallon ($):</label>
+  <input type="number" id="gasCost" step="0.01" placeholder="e.g. 3.50"/>
+</div>
+
+<div class="input-group">
+  <label for="irsRate">Federal Reimbursement Rate ($/mile):</label>
+  <input type="number" id="irsRate" step="0.01" placeholder="e.g. 0.655"/>
 </div>
 
 <button onclick="calculateEarnings()">Calculate</button>
@@ -79,27 +89,41 @@ function calculateEarnings() {
   const P = parseFloat(document.getElementById('payout').value);
   const D = parseFloat(document.getElementById('distance').value);
   const T = parseFloat(document.getElementById('time').value);
-  const M = parseFloat(document.getElementById('mileage').value);
+  const MPG = parseFloat(document.getElementById('mpg').value);
+  const G = parseFloat(document.getElementById('gasCost').value);
+  const IR = parseFloat(document.getElementById('irsRate').value);
 
   // Validate input
-  if (isNaN(P) || isNaN(D) || isNaN(T) || isNaN(M) || P < 0 || D < 0 || T <= 0 || M < 0) {
-    document.getElementById('results').innerHTML = "<p style='color:red;'>Please enter valid positive numbers for all fields (time must be > 0).</p>";
+  if (isNaN(P) || isNaN(D) || isNaN(T) || isNaN(MPG) || isNaN(G) || isNaN(IR) ||
+      P < 0 || D < 0 || T <= 0 || MPG <= 0 || G < 0 || IR < 0) {
+    document.getElementById('results').innerHTML = "<p style='color:red;'>Please enter valid positive numbers (time must be > 0, MPG must be > 0, and all rates must be >= 0).</p>";
     return;
   }
 
-  // Calculate profit per trip: Profit = Total Payout - (Distance * Mileage Cost)
-  const profitPerTrip = P - (D * M);
-
-  // Convert minutes to hours
+  // Calculate gas cost for the trip
+  const gasCostTrip = (D / MPG) * G; 
+  const profitPerTrip = P - gasCostTrip;
   const hours = T / 60;
-
-  // Calculate hourly earnings
   const hourlyEarnings = profitPerTrip / hours;
+  
+  // Calculate gas cost per mile
+  const gasCostPerMile = gasCostTrip / D;
 
-  // Display results
+  // Calculate IRS reimbursement for the trip
+  const federalReimbursement = D * IR;
+
+  // Display results in the requested order:
+  // 1) Profit per Trip
+  // 2) Gas Cost for the Trip
+  // 3) Gas Cost per Mile
+  // 4) Hourly Earnings
+  // 5) IRS Reimbursement for the Trip
   document.getElementById('results').innerHTML = `
     <p><strong>Profit per Trip:</strong> $${profitPerTrip.toFixed(2)}</p>
+    <p><strong>Gas Cost for the Trip:</strong> $${gasCostTrip.toFixed(2)}</p>
+    <p><strong>Gas Cost per Mile:</strong> $${gasCostPerMile.toFixed(2)} per mile</p>
     <p><strong>Hourly Earnings:</strong> $${hourlyEarnings.toFixed(2)} per hour</p>
+    <p><strong>IRS Reimbursement for the Trip:</strong> $${federalReimbursement.toFixed(2)}</p>
   `;
 }
 </script>

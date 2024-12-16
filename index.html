@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Uber Eats Earnings Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+
+  h1 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group label {
+    display: inline-block;
+    width: 220px;
+    font-weight: bold;
+  }
+
+  .input-group input {
+    width: 100px;
+    padding: 5px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+
+  .results {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  .results p {
+    margin: 5px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Uber Eats Earnings Calculator</h1>
+<div class="input-group">
+  <label for="payout">Total Payout per Trip (P):</label>
+  <input type="number" id="payout" step="0.01" placeholder="e.g. 15.00"/>
+</div>
+
+<div class="input-group">
+  <label for="distance">Distance Traveled (D, miles):</label>
+  <input type="number" id="distance" step="0.1" placeholder="e.g. 10"/>
+</div>
+
+<div class="input-group">
+  <label for="time">Travel Time (T, minutes):</label>
+  <input type="number" id="time" step="1" placeholder="e.g. 30"/>
+</div>
+
+<div class="input-group">
+  <label for="mileage">Federal Mileage Cost per Mile (M):</label>
+  <input type="number" id="mileage" step="0.01" placeholder="e.g. 0.65"/>
+</div>
+
+<button onclick="calculateEarnings()">Calculate</button>
+
+<div class="results" id="results"></div>
+
+<script>
+function calculateEarnings() {
+  // Get input values
+  const P = parseFloat(document.getElementById('payout').value);
+  const D = parseFloat(document.getElementById('distance').value);
+  const T = parseFloat(document.getElementById('time').value);
+  const M = parseFloat(document.getElementById('mileage').value);
+
+  // Validate input
+  if (isNaN(P) || isNaN(D) || isNaN(T) || isNaN(M) || P < 0 || D < 0 || T <= 0 || M < 0) {
+    document.getElementById('results').innerHTML = "<p style='color:red;'>Please enter valid positive numbers for all fields (time must be > 0).</p>";
+    return;
+  }
+
+  // Calculate profit per trip: Profit = Total Payout - (Distance * Mileage Cost)
+  const profitPerTrip = P - (D * M);
+
+  // Convert minutes to hours
+  const hours = T / 60;
+
+  // Calculate hourly earnings
+  const hourlyEarnings = profitPerTrip / hours;
+
+  // Display results
+  document.getElementById('results').innerHTML = `
+    <p><strong>Profit per Trip:</strong> $${profitPerTrip.toFixed(2)}</p>
+    <p><strong>Hourly Earnings:</strong> $${hourlyEarnings.toFixed(2)} per hour</p>
+  `;
+}
+</script>
+</body>
+</html>
